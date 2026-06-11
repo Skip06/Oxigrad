@@ -1,15 +1,3 @@
-//This thing wont work cause we need to do operations on our Values
-//and if i Rc<RefCell<Value>> then cant impl add or mul trait cause of orphan rule .
-// also too much to write cause manual .borrow() and clone(). 
-// SO WE NEED A WRAPPER. => tuple struct 
-
-// struct Value {
-//     pub data: f64,
-//     pub grad: f64,
-//     // We have to wrap the parents so multiple nodes can point to them
-//     pub prev: Vec<Rc<RefCell<Value>>>, 
-//     pub op: String, 
-// }
 
 use std::{cell::RefCell, collections::HashSet, ops::{Add, Mul}, rc::Rc};
 
@@ -79,6 +67,43 @@ impl Value{
             _ => {}
             
         }       
+    }
+}
+
+impl Value {
+    fn backward(&self) {
+        let mut topo = Vec::new();
+        let mut visited = HashSet::new();
+ 
+        Self::topo_sort(self, &mut topo, &mut visited); // means 1st all the children then the final node 
+
+        // we will start applying the backward fn from the back 
+        // derivative of final fn wrt itself is 1
+        self.0.borrow_mut().grad = 1.0;
+    
+        for node in topo.iter().rev(){
+            node.backward_grad();
+        }
+    }
+}
+
+
+
+
+
+impl Value {
+    pub fn topo_sort(&self, topo: &mut Vec<Value>, visited: &mut HashSet<usize>) {
+        //But how to check if 2 nodes are same // CANT compare data or grad they might be sam3...
+        // will check the pointer if they are present or not directly 
+        let id = Rc::as_ptr(&self.0) as usize;
+        if visited.contains(&id) {
+            return;
+        }
+        visited.insert(id);
+        for child in self.0.borrow().prev.iter() {
+            child.topo_sort(topo, visited);        //or we could have cloned it and do topo() with 3 arguments
+        }
+        topo.push(self.clone());
     }
 }
 
