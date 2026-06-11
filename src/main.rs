@@ -11,7 +11,7 @@
 //     pub op: String, 
 // }
 
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, ops::{Add, Mul}, rc::Rc};
 
 struct ValueData {
     pub data: f64,
@@ -33,6 +33,33 @@ impl Value {
     }
 }
 
+impl Add for Value{   // we will be returning a Value type after adding with its properties
+    type Output = Value;
+
+    fn add(self, other: Value) -> Self{
+        
+        Value(Rc::new(RefCell::new(ValueData{
+            data: self.0.borrow().data + other.0.borrow().data, //Value is tuple struct so inner val is accessed by idx .0
+            grad: 0.0,
+            prev: vec![Rc::clone(&self.0), Rc::clone(&other.0)],  //.clone() does a deep copy with exclusive owership
+            op: "+".to_string()
+        })))
+        
+    }
+}
+
+impl Mul for Value{
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self {
+        Value(Rc::new(RefCell::new(ValueData{
+            data: self.0.borrow().data * rhs.0.borrow().data, 
+            grad: 0.0,
+            prev: vec![Rc::clone(&self.0), Rc::clone(&rhs.0)], 
+            op: "*".to_string()
+        })))
+    }
+}
 
 
 
