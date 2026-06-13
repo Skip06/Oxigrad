@@ -18,7 +18,7 @@ impl Neuron {
             w: w,
             b: Value::new(rng.random_range(-1.0..1.0)),
         };
-        
+ 
     }
 
     //  FINDS THE ACTIVATIONO OF A SINGLE NEURON 
@@ -55,8 +55,38 @@ impl Layer{
     pub fn forward_layer(&self, x:&[Value]) -> Vec<Value>{
 
         self.neurons.iter().map(|neuron| neuron.forward_neuron(x)).collect()    // same x i/p to all neurons of this same layer 
-    }
+    }  
+}
+
+pub struct MLP {
+    pub layers: Vec<Layer>,
+}
+
+impl MLP{
+    pub fn new(nin: usize, nouts: &[usize]) -> Self { // nin is starting ip size and nout is arr of size of everty layer uske baad  
+
+            let mut sizes = vec![nin];
+            sizes.extend_from_slice(nouts);// combine the input size and output sizes into one list to build layers
     
+            let mut layers = Vec::new();
+            for i in 0..nouts.len(){
+                layers.push(Layer::new(sizes[i], sizes[i+1]));  //   o/p becomes i/p then next elem become the output
+            }
+            
+            Self {
+                layers, 
+            }
+    }
+    pub fn forward_pass(&self, x: &[Value]) -> Vec<Value> {
+        let mut out = x.to_vec(); //x -> layer1.forward_pass(x) -> layer2.forward_pass(layer1_output)
+
+    
+        for layer in self.layers.iter() {
+            out = layer.forward_layer(&out);
+        }
+    
+        out
+    }
 
     
 }
