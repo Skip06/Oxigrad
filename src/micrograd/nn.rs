@@ -6,4 +6,57 @@ pub struct Neuron{
     pub b: Value,
 }
 
+impl Neuron {
+    pub fn new(nin: usize) -> Self { // nin is number of i/p coming to the neuron
+        let mut rng = rand::rng();
+        let mut w = Vec::new();
+        for i in 0..nin{
+            let weight = rng.random_range(-1.0..1.0);
+            w.push(Value::new(weight));
+        }
+       return  Neuron { 
+            w: w,
+            b: Value::new(rng.random_range(-1.0..1.0)),
+        };
+        
+    }
 
+    //  FINDS THE ACTIVATIONO OF A SINGLE NEURON 
+    pub fn forward_neuron(&self, x: &[Value])-> Value{  // 
+        //w * x + b need to mult 2 arrays element wise => Zip 
+
+        let mut activation = self.b.clone(); //making it owned type so out can be additve with w.clne() * x.clone()
+        for (w, x) in self.w.iter().zip(x.iter()){
+            activation = activation + w.clone() * x.clone(); // Mul requires owned types mut iter() returns immutable refs
+        };
+        activation.relu()
+    }
+}
+
+pub struct Layer{
+    pub neurons: Vec<Neuron>,
+}
+
+impl Layer{
+    //nout is number of neurons in this layer.
+    pub fn new(nout: usize, nin: usize) -> Self{  // every neuron of the same layer wiill have same number of inputs to it as they are weights
+
+        let mut neurons = Vec::new();
+        for i in 0..nout{
+            neurons.push(Neuron::new(nin));
+        }
+
+        Self { 
+            neurons: neurons,
+        }
+    }
+
+    //NEED TO RETURN LIST OF ACTIVATION OF ALL NEURONS IN THIS LIST AS O/P SO IT CAN BE I/P TO THE NEXT LAYER//
+    pub fn forward_layer(&self, x:&[Value]) -> Vec<Value>{
+
+        self.neurons.iter().map(|neuron| neuron.forward_neuron(x)).collect()    // same x i/p to all neurons of this same layer 
+    }
+    
+
+    
+}
