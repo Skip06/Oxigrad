@@ -31,6 +31,13 @@ impl Neuron {
         };
         activation.relu()
     }
+
+    pub fn parameters_neuron(&self) -> Vec<Value> {
+        let mut params = self.w.clone();
+        params.push(self.b.clone());
+        let params = params;
+        params
+    }
 }
 
 pub struct Layer{
@@ -56,6 +63,11 @@ impl Layer{
 
         self.neurons.iter().map(|neuron| neuron.forward_neuron(x)).collect()    // same x i/p to all neurons of this same layer 
     }  
+
+    pub fn parameters_layer(&self) -> Vec<Value>{
+        self.neurons.iter().flat_map(|n| n.parameters_neuron()).collect()
+        
+    }
 }
 
 pub struct MLP {
@@ -63,20 +75,21 @@ pub struct MLP {
 }
 
 impl MLP{
-    pub fn new(nin: usize, nouts: &[usize]) -> Self { // nin is starting ip size and nout is arr of size of everty layer uske baad  
+    pub fn new( nouts: &[usize],nin: usize,) -> Self { // nin is starting ip size and nout is arr of size of everty layer uske baad  
 
             let mut sizes = vec![nin];
             sizes.extend_from_slice(nouts);// combine the input size and output sizes into one list to build layers
     
             let mut layers = Vec::new();
             for i in 0..nouts.len(){
-                layers.push(Layer::new(sizes[i], sizes[i+1]));  //   o/p becomes i/p then next elem become the output
+                layers.push(Layer::new(sizes[i+1], sizes[i]));  //   o/p becomes i/p then next elem become the output
             }
             
             Self {
                 layers, 
             }
     }
+    
     pub fn forward_pass(&self, x: &[Value]) -> Vec<Value> {
         let mut out = x.to_vec(); //x -> layer1.forward_pass(x) -> layer2.forward_pass(layer1_output)
 
@@ -86,6 +99,10 @@ impl MLP{
         }
     
         out
+    }
+
+    pub fn parameter_MLP(&self)-> Vec<Value>{
+        self.layers.iter().flat_map(|l| l.parameters_layer()).collect()
     }
 
     
