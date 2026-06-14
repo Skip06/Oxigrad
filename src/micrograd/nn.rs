@@ -35,7 +35,6 @@ impl Neuron {
     pub fn parameters_neuron(&self) -> Vec<Value> {
         let mut params = self.w.clone();
         params.push(self.b.clone());
-        let params = params;
         params
     }
 }
@@ -101,7 +100,7 @@ impl MLP{
         out
     }
 
-    pub fn parameter_MLP(&self)-> Vec<Value>{
+    pub fn parameters(&self)-> Vec<Value>{
         self.layers.iter().flat_map(|l| l.parameters_layer()).collect()
     }
 

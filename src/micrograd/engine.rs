@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::HashSet, ops::{Add, Mul}, rc::Rc};
+use std::{cell::RefCell, collections::HashSet, ops::{Add, Mul, Sub}, rc::Rc};
 
 struct ValueData {
     pub data: f64,
@@ -30,6 +30,14 @@ impl Value {
        pub fn grad(&self) -> f64 {
            self.0.borrow().grad
        }
+
+       pub fn zero_grad(&self) {
+           self.0.borrow_mut().grad = 0.0;
+       }
+
+       pub fn set_data(&self, val: f64) {
+           self.0.borrow_mut().data = val;
+       }
 }
 
 impl Add for Value{   // we will be returning a Value type after adding with its properties
@@ -46,6 +54,22 @@ impl Add for Value{   // we will be returning a Value type after adding with its
         })));
         return out ; 
     }
+}
+
+impl Sub for Value{
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self::Output{
+        let out = Value(Rc::new(RefCell::new(ValueData{
+            data: self.0.borrow().data - other.0.borrow().data,
+            grad: 0.0,
+            prev: vec![ self.clone(), other.clone() ],
+            op: "-".to_string(),
+            exp: 0.0,
+        })));
+        return out;
+    }
+    
 }
 
 impl Mul for Value{
