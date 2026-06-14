@@ -11,39 +11,42 @@ fn main() {
     ];
     let ys = vec![Value::new(1.0),Value::new(-1.0),Value::new(-1.0),Value::new(1.0)];
 
-    let mlp = MLP::new(&[4,4,1], 3); // nn with 3 imputs , two hiddenlayes with 4 neurons, 1 output
+    let mlp = MLP::new(&[4,4,1], 3); // nn with 3 inputs, two hidden layers with 4 neurons, 1 output
     let epochs = 20;
     let lr = 0.04;
 
     for epoch in 0..epochs{
+        // FORWARD PASS
         let mut y_nn = Vec::new();
         for x in &xs{
-            let pred = mlp.forward_pass(x)[0].clone();  // we jsut have one output neuron
+            let pred = mlp.forward_pass(x)[0].clone();
             y_nn.push(pred);
         }
 
+        // LOSS (MSE)
         let mut loss = Value::new(0.0);
         for (y_pred, y) in y_nn.iter().zip(ys.iter()){
-            let diff = y_pred.clone() - y.clone();         //jsut finding the loss
+            let diff = y_pred.clone() - y.clone();
             let diff_sq = diff.clone() * diff.clone();
             loss = loss + diff_sq;
         }
 
-        //ZERO GRADIENT
+        // ZERO GRADIENT
         for param in mlp.parameters(){
             param.zero_grad();
         }
 
+        // BACKWARD
         loss.backward();
 
+        // UPDATE WEIGHTS
         for param in mlp.parameters(){
             let grad = param.grad();
             let updated = param.data() - lr * grad;
             param.set_data(updated);
         }
-        
 
-        
+        println!("epoch {:2} | loss: {:.6}", epoch, loss.data());
     }
     
 }

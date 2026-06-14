@@ -120,12 +120,19 @@ impl Value{
         let node = self.0.borrow();  // node is now ValueData cause .0 gives tuples 1st elem which is  Rc<RefCell<ValueData>> and then .borrow() give the inner elem i.e. a Ref to ValueData but writing .grad autoDeref it to access the value like *
         match node.op.as_str() {    //to convert String to &str => .as_str() cause match does not trigger deref coercion
             "+" => {                 // cant do = it as gradients must be accumulated. b = a + a example by karpathy // MULTIVARIATE DERIVATIVE
-                node.prev[0].0.borrow_mut().grad += 1.0 * node.grad; // additon local derivative (1+0) * global derivative of final fn wrt this current node. 
+                node.prev[0].0.borrow_mut().grad += 1.0 * node.grad;
                 node.prev[1].0.borrow_mut().grad += 1.0 * node.grad;
             }
+            "-" => {                 // d/da (a - b) = +1, d/db (a - b) = -1
+                node.prev[0].0.borrow_mut().grad += 1.0 * node.grad;
+                node.prev[1].0.borrow_mut().grad += -1.0 * node.grad;
+            }
             "*" => { // just the chain rule of derivative 
-                node.prev[0].0.borrow_mut().grad += node.prev[1].0.borrow().data * node.grad;
-                node.prev[1].0.borrow_mut().grad += node.prev[0].0.borrow().data * node.grad;
+                let data0 = node.prev[0].0.borrow().data;
+                let data1 = node.prev[1].0.borrow().data;
+
+                node.prev[0].0.borrow_mut().grad += data1 * node.grad;
+                node.prev[1].0.borrow_mut().grad += data0 * node.grad;
                 
             }
             "pow" => {
