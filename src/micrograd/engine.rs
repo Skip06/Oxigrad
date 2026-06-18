@@ -1,4 +1,6 @@
 use std::{cell::RefCell, collections::HashSet, ops::{Add, Mul, Sub}, rc::Rc};
+use std::fmt;
+use std::fmt::Display;
 
 struct ValueData {
     pub data: f64,
@@ -38,6 +40,15 @@ impl Value {
        pub fn set_data(&self, val: f64) {
            self.0.borrow_mut().data = val;
        }
+}
+
+impl Display for Value{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+
+        write!(f, "Value(data = {},grad = {})", self.data(), self.grad())?;
+        Ok(())
+    }
+
 }
 
 impl Add for Value{   // we will be returning a Value type after adding with its properties
@@ -111,7 +122,19 @@ impl Value{
         })));
         return out; 
     }
-   
+
+    pub fn tanh(&self) -> Self {
+        let t = self.data().tanh();
+        let out = Value(Rc::new(RefCell::new(ValueData {
+            data: t,
+            grad: 0.0,
+            prev:vec![self.clone()],
+            op: "tanh".to_string(),
+            exp: 0.0,
+        }
+        )));
+        return out;
+    }
 }
 
 
@@ -147,6 +170,11 @@ impl Value{
                 else{
                     node.prev[0].0.borrow_mut().grad += 0.0;
                 }
+            }
+            "tanh" => {
+                let t = node.data;
+                node.prev[0].0.borrow_mut().grad += (1.0 - t.powi(2)) * node.grad;
+                
             }
 
             _ => {}
