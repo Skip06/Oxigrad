@@ -1,4 +1,5 @@
-use micrograd_rs::{Value, micrograd::nn::MLP};
+use micrograd_rs::{Value, micrograd::nn::MLP, graphiz};
+
 
 fn main() {
     // this below is a dummy dataset from karpathy's video
@@ -19,6 +20,8 @@ fn main() {
     let epochs = 30;
     let lr = 0.04;
 
+    let mut loss = Value::new(0.0); // hoisted so draw_dot can access it after the loop
+
     for epoch in 0..epochs {
         let mut y_nn = Vec::new();
         for x in &xs {
@@ -26,7 +29,7 @@ fn main() {
             y_nn.push(pred);
         }
 
-        let mut loss = Value::new(0.0);
+        loss = Value::new(0.0);
         for (y_pred, y) in y_nn.iter().zip(ys.iter()) {
             let diff = y_pred.clone() - y.clone(); //jsut finding the loss
             let diff_sq = diff.clone() * diff.clone();
@@ -50,4 +53,7 @@ fn main() {
 
         println!("Epoch {}: Loss = {}", epoch, loss.data());
     }
+
+    // ── Visualize the compute graph ──
+    graphiz::render(&loss, "loss", "graph");
 }

@@ -40,6 +40,18 @@ impl Value {
        pub fn set_data(&self, val: f64) {
            self.0.borrow_mut().data = val;
        }
+
+    // Returns a unique ID for this node (raw pointer address).
+    // Used by the graphiz module to identify nodes without exposing ValueData.
+    pub fn node_id(&self) -> usize {
+        Rc::as_ptr(&self.0) as usize
+    }
+
+    // Return a snapshot of (data, grad, op, children) in one borrow. used by the graphiz module so it can recurse without borrow.
+    pub fn internals(&self) -> (f64, f64, String, Vec<Value>) {
+        let node = self.0.borrow();
+        (node.data, node.grad, node.op.clone(), node.prev.clone())
+    }
 }
 
 impl Display for Value{
@@ -211,3 +223,4 @@ impl Value{
         topo.push(self.clone());
     }
 }
+
