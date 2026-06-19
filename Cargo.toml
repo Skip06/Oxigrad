@@ -15,3 +15,7 @@ rand = "0.10.1"
 
 [lib]
 path = "src/lib.rs"
+
+exclude = [
+    "*.svg",
+    "*.dot",
