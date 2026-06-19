@@ -19,3 +19,4 @@ path = "src/lib.rs"
 exclude = [
     "*.svg",
     "*.dot",
+]
