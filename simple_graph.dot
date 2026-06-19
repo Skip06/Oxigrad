@@ -1,0 +1,16 @@
+digraph G {
+  rankdir=LR;
+  node [fontname="Helvetica"];
+  n94794958430128 [label="{ c | data=8.0000 | grad=1.0000 }", shape=record];
+  op_94794958430128 [label="+", shape=ellipse, style=filled, fillcolor=lightyellow];
+  n94794958429952 [label="{ data=6.0000 | grad=1.0000 }", shape=record];
+  op_94794958429952 [label="*", shape=ellipse, style=filled, fillcolor=lightyellow];
+  n94794958429664 [label="{ data=2.0000 | grad=4.0000 }", shape=record];
+  n94794958429776 [label="{ data=3.0000 | grad=2.0000 }", shape=record];
+  op_94794958430128 -> n94794958430128;
+  n94794958429952 -> op_94794958430128;
+  n94794958429664 -> op_94794958430128;
+  op_94794958429952 -> n94794958429952;
+  n94794958429664 -> op_94794958429952;
+  n94794958429776 -> op_94794958429952;
+}

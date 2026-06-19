@@ -44,8 +44,7 @@ fn main() {
         loss.backward();
 
         for param in mlp.parameters() {
-            //gonna update every single parameter
-            let grad = param.grad();
+            let grad = param.grad(); //gonna update every single parameter
             //param.data() -= lr * grad; ERROR as we need something to into RefCell and change this fucntion call is not actually changin that value
             let update = param.data() - lr * grad;
             param.set_data(update);
@@ -54,6 +53,6 @@ fn main() {
         println!("Epoch {}: Loss = {}", epoch, loss.data());
     }
 
-    // ── Visualize the compute graph ──
+
     graphiz::render(&loss, "loss", "graph");
 }
