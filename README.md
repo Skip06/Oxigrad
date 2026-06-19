@@ -1,6 +1,6 @@
-# micrograd_rs
+# Oxigrad
 
-`micrograd_rs` is a tiny Rust implementation of automatic differentiation inspired by Andrej Karpathy's [micrograd](https://github.com/karpathy/micrograd).
+`oxigrad` is a tiny Rust implementation of automatic differentiation inspired by Andrej Karpathy's [micrograd](https://github.com/karpathy/micrograd).
 
 It builds scalar computation graphs, tracks operations between values, and computes gradients using reverse-mode backpropagation. On top of that, it includes simple neural-network primitives like `Neuron`, `Layer`, and `MLP` so you can train a small multilayer perceptron from scratch.
 
