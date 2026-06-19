@@ -20,7 +20,7 @@ This project lets you:
 ## Example
 
 ```rust
-use micrograd_rs::Value;
+use oxigrad::Value;
 
 fn main() {
     let a = Value::new(2.0);

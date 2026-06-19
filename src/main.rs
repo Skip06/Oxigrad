@@ -1,4 +1,4 @@
-use micrograd_rs::{Value, micrograd::nn::MLP, graphiz};
+use oxigrad::{Value, micrograd::nn::MLP, graphiz};
 
 
 fn main() {

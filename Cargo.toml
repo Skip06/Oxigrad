@@ -1,7 +1,13 @@
 [package]
-name = "micrograd_rs"
+name = "oxigrad"
 version = "0.1.0"
 edition = "2024"
+description = "A tiny Rust automatic differentiation engine inspired by micrograd"
+license = "MIT"
+repository = "https://github.com/skip06/micrograd_rs"
+readme = "README.md"
+keywords = ["autodiff", "machine-learning", "neural-network", "micrograd"]
+categories = ["science"]
 
 [dependencies]
 rand = "0.10.1"
